@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Dashboard | Anveshak</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='../index.html'">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="../index.html" class="nav-link">Traceability</a>
+                <a href="../index.html" class="nav-link">About Us</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-outline" onclick="window.location.href='../login_roles.html'">Login</button>
+                <button class="btn btn-primary" onclick="window.location.href='../roles.html'">New User</button>
+            </div>
+        </div>
+    </nav>
+    <main style="padding-top: 80px;">
+<section id="view-processing-dashboard" class="view dashboard-view" style="display:flex">
+            <div class="dashboard-sidebar">
+                <div class="sidebar-header">Manufacturing Hub</div>
+                <div class="sidebar-menu">
+                    <a href="#" class="active">Operations</a>
+                    <a href="#">QC Reports</a>
+                    <a href="#">Supplier Verifications</a>
+                    <a href="#">Smart Contracts</a>
+                </div>
+            </div>
+            <div class="dashboard-content">
+                <div class="flex-between">
+                    <h2 class="dashboard-title">Operations Control</h2>
+                    <button class="btn btn-primary btn-sm">Log New Transformation</button>
+                </div>
+                
+                <div class="dash-grid-3">
+                    <div class="stat-card">
+                        <div class="stat-title">Herbs Received</div>
+                        <div class="stat-value">1,240 kg</div>
+                        <div class="stat-change text-success">+12% this week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Active Processes</div>
+                        <div class="stat-value">4</div>
+                        <div class="stat-change">Decoction & Maceration</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Pending QC</div>
+                        <div class="stat-value">2 Batches</div>
+                        <div class="stat-change text-warning">Requires approval</div>
+                    </div>
+                </div>
+
+                <div class="dash-card mt-6">
+                    <h3>Recent Batch Transformations</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Source Batch ID</th>
+                                <th>Supplier</th>
+                                <th>Process</th>
+                                <th>QC Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0x8a9...3f1</td>
+                                <td>Farm A (Ashwagandha)</td>
+                                <td>Decoction</td>
+                                <td><span class="badge badge-success">Passed</span></td>
+                                <td><button class="btn btn-outline btn-sm">View Log</button></td>
+                            </tr>
+                            <tr>
+                                <td>0x4b2...9c4</td>
+                                <td>Farm C (Tulsi)</td>
+                                <td>Infusion</td>
+                                <td><span class="badge badge-warning">Pending</span></td>
+                                <td><button class="btn btn-primary btn-sm">Sign Contract</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="../app.js"></script>
+</body>
+</html>
