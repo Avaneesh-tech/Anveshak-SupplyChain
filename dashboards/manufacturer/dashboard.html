@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufacturer Dashboard | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="../../index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+            <div class="nav-links">
+                <span id="approval-status" class="chip" style="display:none; margin-right: 1rem;"></span>
+                <span id="user-greeting" class="text-secondary">Welcome, Manufacturer</span>
+                <button class="btn btn-ghost" onclick="core.logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="mb-2">
+                <h4 class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Manufacturing</h4>
+                <ul style="list-style: none; margin-top: 1rem;">
+                    <li class="mb-1"><a href="#" class="nav-link active" onclick="showSection('overview')">Production Hub</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link" onclick="showSection('transformation')">Transformation</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link" onclick="showSection('dispatch')">Logistics Dispatch</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <div id="overview-section">
+                <header class="mb-2">
+                    <h1>Manufacturing Floor</h1>
+                    <p class="text-secondary">Oversee the transformation of raw ingredients into premium products.</p>
+                </header>
+
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Ready for Production</span>
+                        <div class="stat-val" id="ready-count">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Batches Produced</span>
+                        <div class="stat-val" id="produced-count">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Compliance Status</span>
+                        <div class="stat-val" style="color: var(--success);">Verified</div>
+                    </div>
+                </div>
+
+                <div class="card mt-2">
+                    <h3 class="mb-1">Inventory for Manufacturing</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 1rem 0.5rem;">Batch #</th>
+                                <th style="padding: 1rem 0.5rem;">Product</th>
+                                <th style="padding: 1rem 0.5rem;">Status</th>
+                                <th style="padding: 1rem 0.5rem;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="batch-table">
+                            <!-- Batches load here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="transformation-section" style="display:none;">
+                <div class="card glass animate-up" style="max-width: 600px;">
+                    <h3 class="mb-1">Log Manufacturing Transformation</h3>
+                    <form id="transformation-form">
+                        <div class="form-group">
+                            <label class="form-label">Select Batch</label>
+                            <select id="trans-batch" class="form-input" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Processing Temperature (°C)</label>
+                            <input type="number" id="temp" class="form-input" placeholder="e.g. 72">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Machinery ID</label>
+                            <input type="text" id="machine-id" class="form-input" placeholder="e.g. M-082">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Log Transformation</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="dispatch-section" style="display:none;">
+                <div class="card glass animate-up" style="max-width: 600px;">
+                    <h3 class="mb-1">Dispatch to Logistics</h3>
+                    <form id="dispatch-form">
+                        <div class="form-group">
+                            <label class="form-label">Select Batch</label>
+                            <select id="disp-batch" class="form-input" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Destination Warehouse</label>
+                            <input type="text" id="dest" class="form-input" placeholder="e.g. Central Distribution Hub">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Carrier Name</label>
+                            <input type="text" id="carrier" class="form-input" placeholder="e.g. BlueDart / FedEx">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Initiate Shipment</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Supabase Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/supabase-config.js"></script>
+    <script src="../../assets/js/core.js"></script>
+    <script>
+        window.showSection = (sectionId) => {
+            document.querySelectorAll('main > div').forEach(div => div.style.display = 'none');
+            document.getElementById(`${sectionId}-section`).style.display = 'block';
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => link.classList.remove('active'));
+            event?.target?.classList?.add('active');
+        };
+
+        (async () => {
+            await core.checkAccess(['manufacturer', 'admin']);
+            if (!core.currentUser) return;
+            document.getElementById('user-greeting').innerText = `Welcome, ${core.currentUser.name}`;
+
+            const loadData = async () => {
+                try {
+                    const batches = await core.getBatches({ status: 'verified' });
+                    document.getElementById('ready-count').innerText = batches.length;
+                    
+                    const tableBody = document.getElementById('batch-table');
+                    tableBody.innerHTML = batches.map(batch => `
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 1rem 0.5rem;">#${batch.batch_number}</td>
+                            <td style="padding: 1rem 0.5rem;">${batch.product_name}</td>
+                            <td style="padding: 1rem 0.5rem;"><span class="chip">${batch.status}</span></td>
+                            <td style="padding: 1rem 0.5rem;"><button class="btn btn-ghost" onclick="showSection('transformation')">Process</button></td>
+                        </tr>
+                    `).join('');
+
+                    const select1 = document.getElementById('trans-batch');
+                    const select2 = document.getElementById('disp-batch');
+                    const options = batches.map(b => `<option value="${b.id}">${b.batch_number} - ${b.product_name}</option>`).join('');
+                    select1.innerHTML = options;
+                    select2.innerHTML = options;
+                } catch (err) { console.error(err); }
+            };
+
+            loadData();
+
+            document.getElementById('transformation-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const batchId = document.getElementById('trans-batch').value;
+                    await core.addEvent({
+                        batch_id: batchId,
+                        event_type: 'Manufacturing',
+                        description: `Transformed into finished good. Temp: ${document.getElementById('temp').value}°C, Machine: ${document.getElementById('machine-id').value}`
+                    });
+                    alert('Transformation Logged!');
+                    location.reload();
+                } catch (err) { alert(err.message); }
+            });
+
+            document.getElementById('dispatch-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const batchId = document.getElementById('disp-batch').value;
+                    const dest = document.getElementById('dest').value;
+                    await core.addEvent({
+                        batch_id: batchId,
+                        event_type: 'Dispatch',
+                        location: dest,
+                        description: `Dispatched via ${document.getElementById('carrier').value} to ${dest}`
+                    });
+                    // Update batch status to shipped
+                    await window.supabaseClient.from('batches').update({ 
+                        status: 'shipped',
+                        destination: dest
+                    }).eq('id', batchId);
+                    alert('Shipment Initiated!');
+                    location.reload();
+                } catch (err) { alert(err.message); }
+            });
+        })();
+    </script>
+</body>
+</html>

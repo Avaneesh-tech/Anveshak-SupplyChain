@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="traceability.html" class="nav-link">Traceability</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="contact.html" class="nav-link active">Contact</a>
+                <a href="login.html" class="btn btn-primary auth-btn">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container section">
+        <div class="text-center mb-2">
+            <h1>Get in Touch</h1>
+            <p class="text-secondary">Have questions about our blockchain ecosystem? Reach out to us.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem; margin-top: 3rem;">
+            <div class="animate-up">
+                <h3>Contact Information</h3>
+                <p class="text-secondary">Our team is available to assist you with integration, verification, or general inquiries.</p>
+                
+                <div class="mt-2">
+                    <div class="mb-1">
+                        <strong>📍 Address</strong>
+                        <p class="text-muted">Vidyalankar Educational Campus, Sangam Nagar, Wadala, Mumbai.</p>
+                    </div>
+                    <div class="mb-1">
+                        <strong>📧 Email</strong>
+                        <p class="text-muted">contact@anveshak.io</p>
+                    </div>
+                    <div class="mb-1">
+                        <strong>📞 Phone</strong>
+                        <p class="text-muted">+91 (22) 1234 5678</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card animate-up" style="animation-delay: 0.2s;">
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <select class="form-input">
+                            <option>General Inquiry</option>
+                            <option>Technical Support</option>
+                            <option>Partnership</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-input" rows="4" placeholder="How can we help you?" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="section bg-secondary" style="padding: 3rem 0; border-top: 1px solid var(--border-color);">
+        <div class="container text-center">
+            <span class="brand">ANVESHAK</span>
+            <p class="text-muted mt-1">&copy; 2026 Anveshak Ecosystem. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="assets/js/core.js"></script>
+</body>
+</html>

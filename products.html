@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="products.html" class="nav-link active">Products</a>
+                <a href="traceability.html" class="nav-link">Traceability</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="login.html" class="btn btn-primary auth-btn">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container section">
+        <div class="text-center mb-2">
+            <h1>Our Traceable Ayurvedic Products</h1>
+            <p class="text-secondary">Search a Batch ID to view its full blockchain-backed traceability record.</p>
+        </div>
+
+        <div class="grid-3 mt-2">
+            <!-- ASHWAGANDHA CARD -->
+            <div class="card">
+                <span class="chip">ASHWAGANDHA</span>
+                <h3>Premium Ashwagandha</h3>
+                <p class="text-secondary">Selected farm sources and specialized processing for each lot.</p>
+                <div class="form-group mt-1">
+                    <input type="text" id="ashva-input" class="form-input" placeholder="Example: ASH-2025-001">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="searchBatch('ashva-input')">Search Batch</button>
+            </div>
+
+            <!-- TULSI CARD -->
+            <div class="card">
+                <span class="chip">TULSI</span>
+                <h3>Selected Tulsi Leaves</h3>
+                <p class="text-secondary">Processed at premium facilities with full chain transparency.</p>
+                <div class="form-group mt-1">
+                    <input type="text" id="tulsi-input" class="form-input" placeholder="Example: TUL-2025-001">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="searchBatch('tulsi-input')">Search Batch</button>
+            </div>
+
+            <!-- NEEM CARD -->
+            <div class="card">
+                <span class="chip">NEEM</span>
+                <h3>Cold-Pressed Neem</h3>
+                <p class="text-secondary">Full lifecycle data available for every extracted oil batch.</p>
+                <div class="form-group mt-1">
+                    <input type="text" id="neem-input" class="form-input" placeholder="Example: NEM-2025-001">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="searchBatch('neem-input')">Search Batch</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/core.js"></script>
+    <script>
+        function searchBatch(inputId) {
+            const batchId = document.getElementById(inputId).value;
+            if (!batchId) {
+                alert('Please enter a Batch ID');
+                return;
+            }
+            // Redirect to unified traceability search
+            window.location.href = `traceability.html?batch=${batchId}`;
+        }
+    </script>
+</body>
+</html>

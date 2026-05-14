@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body class="bg-secondary">
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="container" style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); padding: 2rem 0;">
+        <div class="card animate-up" style="max-width: 500px; width: 100%;">
+            <div class="text-center mb-2">
+                <h1>Join the Ecosystem</h1>
+                <p class="text-secondary">Create your Anveshak account</p>
+            </div>
+
+            <form id="signup-form">
+                <div class="form-group">
+                    <label class="form-label">Select Your Role</label>
+                    <select id="role" class="form-input" required>
+                        <option value="farmer">Farmer</option>
+                        <option value="processor">Processing Unit</option>
+                        <option value="manufacturer">Manufacturer</option>
+                        <option value="logistics">Logistics</option>
+                        <option value="buyer">Consumer / Buyer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name / Organization Name</label>
+                    <input type="text" id="fullname" class="form-input" placeholder="e.g. John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="e.g. user@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Display Username</label>
+                    <input type="text" id="username" class="form-input" placeholder="Choose a username" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••" required minlength="8">
+                    <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem;">
+                        <div style="flex: 1; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
+                            <div id="password-strength-bar" style="height: 100%; width: 0%; transition: all 0.3s ease; background: #ef4444;"></div>
+                        </div>
+                        <span id="password-strength-text" style="font-size: 0.8rem; color: var(--color-text-secondary); min-width: 60px;"></span>
+                    </div>
+                    <small style="color: var(--color-text-secondary); display: block; margin-top: 0.25rem;">Minimum 8 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" id="confirm-password" class="form-input" placeholder="••••••••" required minlength="8">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Blockchain Wallet Address <span style="color: var(--color-text-secondary);">(Optional)</span></label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="wallet" class="form-input" placeholder="Connect wallet to generate or skip..." readonly>
+                        <button type="button" id="connect-wallet-btn" class="btn btn-outline" style="white-space: nowrap;">Connect Wallet</button>
+                    </div>
+                    <small style="color: var(--color-text-secondary); display: block; margin-top: 0.25rem;">💡 Simulated wallet for demo. Leave empty to proceed without wallet.</small>
+                </div>
+
+                <div id="error-message" style="display: none; padding: 0.75rem; border-radius: 0.5rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+                <div id="success-message" style="display: none; padding: 0.75rem; border-radius: 0.5rem; background: rgba(16, 185, 129, 0.1); color: #10b981; margin-bottom: 1rem; font-size: 0.9rem;"></div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="submit-btn">Create Account</button>
+            </form>
+
+            <div class="text-center mt-2">
+                <p class="text-muted">Already have an account? <a href="login.html" style="color: var(--color-primary); font-weight: 600;">Login</a></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Supabase Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/core.js"></script>
+    <script>
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength += 25;
+            if (password.length >= 12) strength += 25;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 12.5;
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 12.5;
+            return Math.min(strength, 100);
+        }
+
+        function getPasswordStrengthLabel(strength) {
+            if (strength < 25) return 'Weak';
+            if (strength < 50) return 'Fair';
+            if (strength < 75) return 'Good';
+            return 'Strong';
+        }
+
+        function getPasswordStrengthColor(strength) {
+            if (strength < 25) return '#ef4444';
+            if (strength < 50) return '#f59e0b';
+            if (strength < 75) return '#3b82f6';
+            return '#10b981';
+        }
+
+        // Password strength meter
+        document.getElementById('password').addEventListener('input', (e) => {
+            const strength = calculatePasswordStrength(e.target.value);
+            const bar = document.getElementById('password-strength-bar');
+            const text = document.getElementById('password-strength-text');
+
+            bar.style.width = strength + '%';
+            bar.style.background = getPasswordStrengthColor(strength);
+            text.textContent = getPasswordStrengthLabel(strength);
+            text.style.color = getPasswordStrengthColor(strength);
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function clearMessages() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        // Check for active session and redirect if user is already logged in
+        (async () => {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (session) {
+                // Fetch user role and redirect to dashboard
+                const { data: profile } = await window.supabaseClient
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+                if (profile?.role) {
+                    window.location.href = `dashboards/${profile.role}/dashboard.html`;
+                }
+            }
+        })();
+
+        document.getElementById('connect-wallet-btn').addEventListener('click', async (e) => {
+            const btn = e.target;
+            btn.innerText = 'Connecting...';
+            btn.disabled = true;
+            try {
+                const address = await core.connectWallet();
+                document.getElementById('wallet').value = address;
+                btn.innerText = 'Connected';
+                btn.classList.replace('btn-outline', 'btn-primary');
+            } catch (err) {
+                btn.innerText = 'Connect Wallet';
+                btn.disabled = false;
+                btn.classList.replace('btn-primary', 'btn-outline');
+                showError('Failed to connect wallet: ' + err.message);
+            }
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessages();
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Validate password confirmation
+            if (password !== confirmPassword) {
+                showError('Passwords do not match.');
+                return;
+            }
+
+            // Validate minimum password length
+            if (password.length < 8) {
+                showError('Password must be at least 8 characters long.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+
+            const userData = {
+                email: document.getElementById('email').value,
+                username: document.getElementById('username').value,
+                password: password,
+                name: document.getElementById('fullname').value,
+                role: document.getElementById('role').value,
+                wallet: document.getElementById('wallet').value
+            };
+
+            const result = await core.signup(userData);
+            if (result.success) {
+                showSuccess('Account created successfully! Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            } else {
+                showError(result.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    </script>
+</body>
+</html>

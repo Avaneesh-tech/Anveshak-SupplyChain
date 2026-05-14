@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processor Dashboard | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="../../index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+            <div class="nav-links">
+                <span id="approval-status" class="chip" style="display:none; margin-right: 1rem;"></span>
+                <span id="user-greeting" class="text-secondary">Welcome, Processor</span>
+                <button class="btn btn-ghost" onclick="core.logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="mb-2">
+                <h4 class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Processing</h4>
+                <ul style="list-style: none; margin-top: 1rem;">
+                    <li class="mb-1"><a href="#" class="nav-link active" onclick="showSection('overview')">Active Batches</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link" onclick="showSection('processing')">Grading & QC</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link" onclick="showSection('packaging')">Packaging</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <div id="overview-section">
+                <header class="mb-2">
+                    <h1>Processing Hub</h1>
+                    <p class="text-secondary">Refine raw materials and prepare them for manufacturing.</p>
+                </header>
+
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Batches in Processing</span>
+                        <div class="stat-val" id="processing-count">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">QC Pass Rate</span>
+                        <div class="stat-val">98.2%</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Units Packed</span>
+                        <div class="stat-val" id="packed-count">--</div>
+                    </div>
+                </div>
+
+                <div class="card mt-2">
+                    <h3 class="mb-1">Current Workload</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 1rem 0.5rem;">Batch #</th>
+                                <th style="padding: 1rem 0.5rem;">Product</th>
+                                <th style="padding: 1rem 0.5rem;">Status</th>
+                                <th style="padding: 1rem 0.5rem;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="batch-table">
+                            <!-- Batches load here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="processing-section" style="display:none;">
+                <div class="card glass animate-up" style="max-width: 600px;">
+                    <h3 class="mb-1">Log Grading & QC</h3>
+                    <form id="processing-form">
+                        <div class="form-group">
+                            <label class="form-label">Select Batch</label>
+                            <select id="proc-batch" class="form-input" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Moisture Content (%)</label>
+                            <input type="number" step="0.1" id="moisture" class="form-input" placeholder="e.g. 10.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">QC Result</label>
+                            <select id="qc-result" class="form-input">
+                                <option value="Passed">Passed</option>
+                                <option value="Failed">Failed</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Log QC Event</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="packaging-section" style="display:none;">
+                <div class="card glass animate-up" style="max-width: 600px;">
+                    <h3 class="mb-1">Log Packaging</h3>
+                    <form id="packaging-form">
+                        <div class="form-group">
+                            <label class="form-label">Select Batch</label>
+                            <select id="pack-batch" class="form-input" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Package Type</label>
+                            <input type="text" id="pack-type" class="form-input" placeholder="e.g. Vacuum Sealed Pouches">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Total Units</label>
+                            <input type="number" id="units" class="form-input" placeholder="e.g. 1000">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Finalize Packaging</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Supabase Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/supabase-config.js"></script>
+    <script src="../../assets/js/core.js"></script>
+    <script>
+        window.showSection = (sectionId) => {
+            document.querySelectorAll('main > div').forEach(div => div.style.display = 'none');
+            document.getElementById(`${sectionId}-section`).style.display = 'block';
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => link.classList.remove('active'));
+            event?.target?.classList?.add('active');
+        };
+
+        (async () => {
+            await core.checkAccess(['processor', 'admin']);
+            if (!core.currentUser) return;
+            document.getElementById('user-greeting').innerText = `Welcome, ${core.currentUser.name}`;
+
+            const loadData = async () => {
+                try {
+                    const batches = await core.getBatches({ status: 'processing' });
+                    document.getElementById('processing-count').innerText = batches.length;
+                    
+                    const tableBody = document.getElementById('batch-table');
+                    tableBody.innerHTML = batches.map(batch => `
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 1rem 0.5rem;">#${batch.batch_number}</td>
+                            <td style="padding: 1rem 0.5rem;">${batch.product_name}</td>
+                            <td style="padding: 1rem 0.5rem;"><span class="chip">${batch.status}</span></td>
+                            <td style="padding: 1rem 0.5rem;"><button class="btn btn-ghost" onclick="showSection('processing')">Process</button></td>
+                        </tr>
+                    `).join('');
+
+                    const select1 = document.getElementById('proc-batch');
+                    const select2 = document.getElementById('pack-batch');
+                    const options = batches.map(b => `<option value="${b.id}">${b.batch_number} - ${b.product_name}</option>`).join('');
+                    select1.innerHTML = options;
+                    select2.innerHTML = options;
+                } catch (err) { console.error(err); }
+            };
+
+            loadData();
+
+            document.getElementById('processing-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const batchId = document.getElementById('proc-batch').value;
+                    await core.addEvent({
+                        batch_id: batchId,
+                        event_type: 'Quality Check',
+                        description: `Moisture: ${document.getElementById('moisture').value}%, Result: ${document.getElementById('qc-result').value}`
+                    });
+                    alert('QC Event Logged!');
+                    location.reload();
+                } catch (err) { alert(err.message); }
+            });
+
+            document.getElementById('packaging-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                try {
+                    const batchId = document.getElementById('pack-batch').value;
+                    await core.addEvent({
+                        batch_id: batchId,
+                        event_type: 'Packaging',
+                        description: `Packed in ${document.getElementById('pack-type').value}, Total Units: ${document.getElementById('units').value}`
+                    });
+                    // Update batch status to verified (ready for manufacturing)
+                    await window.supabaseClient.from('batches').update({ status: 'verified' }).eq('id', batchId);
+                    alert('Packaging Finalized!');
+                    location.reload();
+                } catch (err) { alert(err.message); }
+            });
+        })();
+    </script>
+</body>
+</html>

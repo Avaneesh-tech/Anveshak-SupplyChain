@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body class="bg-secondary">
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="container" style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); padding: 2rem 0;">
+        <div class="card animate-up" style="max-width: 450px; width: 100%;">
+            <div class="text-center mb-2">
+                <h1>Welcome Back</h1>
+                <p class="text-secondary">Login to your Anveshak dashboard</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">I am a...</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
+                        <input type="radio" name="role" value="admin" id="role-admin" style="display:none;">
+                        <label for="role-admin" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.8rem;">Admin</label>
+                        
+                        <input type="radio" name="role" value="farmer" id="role-farmer" style="display:none;">
+                        <label for="role-farmer" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.8rem;">Farmer</label>
+
+                        <input type="radio" name="role" value="processor" id="role-processor" style="display:none;">
+                        <label for="role-processor" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.8rem;">Processor</label>
+
+                        <input type="radio" name="role" value="manufacturer" id="role-manufacturer" style="display:none;">
+                        <label for="role-manufacturer" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.8rem;">Manufacturer</label>
+
+                        <input type="radio" name="role" value="logistics" id="role-logistics" style="display:none;">
+                        <label for="role-logistics" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.8rem;">Logistics</label>
+                        
+                        <input type="radio" name="role" value="buyer" id="role-buyer" style="display:none;" checked>
+                        <label for="role-buyer" class="btn btn-outline" style="padding: 0.5rem; font-size: 0.8rem;">Consumer</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="submit-btn">Login to Dashboard</button>
+
+                <div id="error-message" style="display: none; padding: 0.75rem; border-radius: 0.5rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; margin-top: 1rem; font-size: 0.9rem;"></div>
+                <div id="success-message" style="display: none; padding: 0.75rem; border-radius: 0.5rem; background: rgba(16, 185, 129, 0.1); color: #10b981; margin-top: 1rem; font-size: 0.9rem;"></div>
+            </form>
+
+            <div class="text-center mt-2">
+                <p class="text-muted">Don't have an account? <a href="signup.html" style="color: var(--color-primary); font-weight: 600;">Sign up</a></p>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        input[type="radio"]:checked + label {
+            background: var(--color-primary);
+            color: #fff;
+            border-color: var(--color-primary);
+        }
+    </style>
+
+    <!-- Supabase Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/core.js"></script>
+    <script>
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        // Check for active session and redirect if user is already logged in
+        (async () => {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (session) {
+                // Fetch user role and redirect to dashboard
+                const { data: profile } = await window.supabaseClient
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+                if (profile?.role) {
+                    window.location.href = `dashboards/${profile.role}/dashboard.html`;
+                }
+            }
+        })();
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Logging in...';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const result = await core.login(email, password);
+            if (result.success) {
+                showSuccess('Login successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = `dashboards/${result.role}/dashboard.html`;
+                }, 500);
+            } else {
+                showError(result.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    </script>
+</body>
+</html>

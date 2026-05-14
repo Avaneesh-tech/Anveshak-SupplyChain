@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traceability | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <style>
+        /* Supply Chain Pipeline Styles */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 2rem 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 110px;
+            opacity: 0.35;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            flex-shrink: 0;
+        }
+        .pipeline-step.active {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        .pipeline-step.completed {
+            opacity: 0.85;
+        }
+        .pipeline-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            transition: all 0.4s;
+        }
+        .pipeline-step.active .pipeline-icon {
+            border-color: var(--color-primary);
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        .pipeline-step.completed .pipeline-icon {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .pipeline-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .pipeline-step.active .pipeline-label,
+        .pipeline-step.completed .pipeline-label { color: var(--text-primary); }
+        .pipeline-connector {
+            flex: 1;
+            height: 2px;
+            background: var(--border-color);
+            min-width: 20px;
+            max-width: 50px;
+            position: relative;
+            top: -16px;
+        }
+        .pipeline-connector.done {
+            background: linear-gradient(90deg, #10b981, var(--color-primary));
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.75rem;
+            animation: slideIn 0.4s ease both;
+        }
+        .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(5) { animation-delay: 0.5s; }
+        .timeline-item:nth-child(6) { animation-delay: 0.6s; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -2.15rem;
+            top: 0.35rem;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+            border: 2px solid var(--bg-primary);
+        }
+        .timeline-dot.genesis { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+        .timeline-dot.farm    { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        .timeline-dot.process { background: #6366f1; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); }
+        .timeline-dot.mfg     { background: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .timeline-dot.ship    { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+        .timeline-dot.done    { background: #10b981; }
+        .timeline-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            transition: border-color 0.2s;
+        }
+        .timeline-card:hover { border-color: var(--color-primary); }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .timeline-type {
+            font-weight: 700;
+            font-family: var(--font-heading);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .timeline-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .timeline-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .tx-hash {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--color-primary);
+            background: rgba(99, 102, 241, 0.08);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.4rem;
+            display: inline-block;
+        }
+
+        /* Status badge colors */
+        .status-pending    { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-processing { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
+        .status-verified   { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .status-shipped    { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-delivered  { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    </style>
+</head>
+<body>
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="traceability.html" class="nav-link active">Traceability</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="login.html" class="btn btn-primary auth-btn">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container section">
+        <div class="text-center mb-2">
+            <h1>Product Traceability</h1>
+            <p class="text-secondary">Verify the authenticity and complete journey of any product from farm to consumer.</p>
+        </div>
+
+        <div class="card" style="max-width: 620px; margin: 0 auto;">
+            <div class="form-group">
+                <label class="form-label">Enter Batch ID / Scan QR Code</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="batch-id" class="form-input" placeholder="e.g. ASHVA-2025-0001">
+                    <button class="btn btn-primary" id="verify-btn">
+                        <span id="btn-text">Verify</span>
+                    </button>
+                </div>
+            </div>
+            <p class="text-muted" style="font-size: 0.8rem;">Try: ASHVA-2025-0001 &nbsp;|&nbsp; TULSI-2025-0001 &nbsp;|&nbsp; NEEM-2025-0001</p>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!--                    RESULT PANEL                     -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="result-container" class="mt-2" style="display: none;">
+
+            <!-- Header Card -->
+            <div class="card animate-up">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <span class="chip" id="res-status-chip">Verified on Blockchain</span>
+                        <h2 id="res-product-name" style="margin-top: 0.5rem;"></h2>
+                        <p class="text-muted" id="res-batch-id"></p>
+                    </div>
+                    <div class="text-center">
+                        <div style="width: 90px; height: 90px; background: var(--bg-secondary); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm);">
+                            <small class="text-muted">QR Code</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Registered On</span>
+                        <div class="stat-val" id="res-harvest-date" style="font-size: 1.1rem;"></div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Source Farm</span>
+                        <div class="stat-val" id="res-source-farm" style="font-size: 1.1rem;"></div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Destination</span>
+                        <div class="stat-val" id="res-destination" style="font-size: 1.1rem;"></div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Chain Events</span>
+                        <div class="stat-val" id="res-event-count" style="font-size: 1.1rem;">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════ SUPPLY CHAIN PIPELINE ════ -->
+            <div class="card animate-up mt-2">
+                <h3 style="margin-bottom: 0.25rem;">Supply Chain Pipeline</h3>
+                <p class="text-secondary" style="font-size: 0.85rem; margin-bottom: 1rem;">End-to-end journey from origin to consumer.</p>
+
+                <div class="pipeline" id="pipeline-viz">
+                    <div class="pipeline-step" id="stage-farm">
+                        <div class="pipeline-icon">🌿</div>
+                        <div class="pipeline-label">Farm</div>
+                    </div>
+                    <div class="pipeline-connector" id="conn-1"></div>
+                    <div class="pipeline-step" id="stage-harvest">
+                        <div class="pipeline-icon">🌾</div>
+                        <div class="pipeline-label">Harvest</div>
+                    </div>
+                    <div class="pipeline-connector" id="conn-2"></div>
+                    <div class="pipeline-step" id="stage-qc">
+                        <div class="pipeline-icon">🔬</div>
+                        <div class="pipeline-label">Quality Check</div>
+                    </div>
+                    <div class="pipeline-connector" id="conn-3"></div>
+                    <div class="pipeline-step" id="stage-packaging">
+                        <div class="pipeline-icon">📦</div>
+                        <div class="pipeline-label">Packaging</div>
+                    </div>
+                    <div class="pipeline-connector" id="conn-4"></div>
+                    <div class="pipeline-step" id="stage-manufacturing">
+                        <div class="pipeline-icon">🏭</div>
+                        <div class="pipeline-label">Manufacturing</div>
+                    </div>
+                    <div class="pipeline-connector" id="conn-5"></div>
+                    <div class="pipeline-step" id="stage-logistics">
+                        <div class="pipeline-icon">🚚</div>
+                        <div class="pipeline-label">Logistics</div>
+                    </div>
+                    <div class="pipeline-connector" id="conn-6"></div>
+                    <div class="pipeline-step" id="stage-consumer">
+                        <div class="pipeline-icon">🛒</div>
+                        <div class="pipeline-label">Consumer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════ DETAILED TIMELINE ════ -->
+            <div class="card animate-up mt-2">
+                <h3 style="margin-bottom: 0.25rem;">Immutable Event Log</h3>
+                <p class="text-secondary" style="font-size: 0.85rem; margin-bottom: 1.5rem;">Every step permanently recorded on the blockchain.</p>
+                <div class="timeline" id="journey-timeline">
+                    <!-- Events rendered here -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Error -->
+        <div id="error-container" class="mt-2 text-center" style="display: none;">
+            <div class="card" style="border-color: var(--danger); max-width: 500px; margin: 0 auto;">
+                <h3 style="color: var(--danger);">⚠ Verification Failed</h3>
+                <p>The Batch ID could not be found on our blockchain ledger. Please check the ID and try again.</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/core.js"></script>
+    <script>
+        // ── Event type → pipeline stage & styling map ──
+        const EVENT_MAP = {
+            'Cultivation': { stage: 'stage-farm',          dot: 'farm',    icon: '🌿', color: '#10b981' },
+            'Harvest':     { stage: 'stage-harvest',       dot: 'farm',    icon: '🌾', color: '#10b981' },
+            'Quality Check': { stage: 'stage-qc',          dot: 'process', icon: '🔬', color: '#6366f1' },
+            'Packaging':   { stage: 'stage-packaging',     dot: 'process', icon: '📦', color: '#6366f1' },
+            'Manufacturing': { stage: 'stage-manufacturing', dot: 'mfg',  icon: '🏭', color: '#3b82f6' },
+            'Transformation': { stage: 'stage-manufacturing', dot: 'mfg', icon: '⚙️', color: '#3b82f6' },
+            'Dispatch':    { stage: 'stage-logistics',     dot: 'ship',   icon: '📤', color: '#f59e0b' },
+            'Tracking Update': { stage: 'stage-logistics', dot: 'ship',   icon: '🚚', color: '#f59e0b' },
+        };
+
+        const STAGE_ORDER = ['stage-farm','stage-harvest','stage-qc','stage-packaging','stage-manufacturing','stage-logistics','stage-consumer'];
+        const CONN_ORDER  = ['conn-1','conn-2','conn-3','conn-4','conn-5','conn-6'];
+
+        function updatePipeline(events, batchStatus) {
+            // Determine which stages have been reached
+            const reachedStages = new Set();
+
+            events.forEach(e => {
+                const map = EVENT_MAP[e.event_type];
+                if (map) reachedStages.add(map.stage);
+            });
+
+            if (batchStatus === 'delivered') reachedStages.add('stage-consumer');
+
+            // Mark stages
+            let lastReached = -1;
+            STAGE_ORDER.forEach((id, idx) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (reachedStages.has(id)) {
+                    el.classList.add('completed');
+                    lastReached = idx;
+                }
+            });
+
+            // Active = one beyond last reached
+            if (lastReached + 1 < STAGE_ORDER.length) {
+                const activeEl = document.getElementById(STAGE_ORDER[lastReached + 1]);
+                if (activeEl) activeEl.classList.add('active');
+            }
+
+            // Connectors
+            for (let i = 0; i < lastReached; i++) {
+                const conn = document.getElementById(CONN_ORDER[i]);
+                if (conn) conn.classList.add('done');
+            }
+        }
+
+        function renderTimeline(events, data) {
+            const timeline = document.getElementById('journey-timeline');
+
+            // Genesis event always first
+            let html = `
+                <div class="timeline-item">
+                    <div class="timeline-dot genesis"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-header">
+                            <div class="timeline-type" style="color:#f59e0b;">🔐 Blockchain Genesis</div>
+                            <span class="timeline-meta">${new Date(data.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</span>
+                        </div>
+                        <div class="timeline-desc">Batch registered on immutable blockchain ledger.</div>
+                        <span class="tx-hash">🔗 TX: ${data.blockchain_tx_hash ? data.blockchain_tx_hash.substring(0, 18) + '...' : 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+
+            if (events && events.length > 0) {
+                html += events.map(event => {
+                    const map = EVENT_MAP[event.event_type] || { dot: 'process', icon: '📋', color: '#6366f1' };
+                    return `
+                        <div class="timeline-item">
+                            <div class="timeline-dot ${map.dot}"></div>
+                            <div class="timeline-card">
+                                <div class="timeline-header">
+                                    <div class="timeline-type" style="color:${map.color};">${map.icon} ${event.event_type}</div>
+                                    <span class="timeline-meta">${new Date(event.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</span>
+                                </div>
+                                <div class="timeline-desc">${event.description || ''}</div>
+                                ${event.location ? `<div class="timeline-meta" style="margin-top:0.4rem;">📍 ${event.location}</div>` : ''}
+                                <span class="tx-hash">🔗 TX: ${event.blockchain_tx_hash ? event.blockchain_tx_hash.substring(0, 18) + '...' : 'N/A'}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                html += `<p class="text-muted">No chain events logged yet for this batch.</p>`;
+            }
+
+            timeline.innerHTML = html;
+        }
+
+        // ── URL param pre-fill ──
+        window.addEventListener('DOMContentLoaded', () => {
+            const batchId = new URLSearchParams(window.location.search).get('batch');
+            if (batchId) {
+                document.getElementById('batch-id').value = batchId;
+                document.getElementById('verify-btn').click();
+            }
+        });
+
+        // ── Verify button ──
+        document.getElementById('verify-btn').addEventListener('click', async () => {
+            const batchId     = document.getElementById('batch-id').value.trim().toUpperCase();
+            const resultEl    = document.getElementById('result-container');
+            const errorEl     = document.getElementById('error-container');
+            const btnText     = document.getElementById('btn-text');
+
+            if (!batchId) return;
+
+            btnText.innerText = 'Searching...';
+            resultEl.style.display = 'none';
+            errorEl.style.display  = 'none';
+
+            try {
+                const results = await core.getBatches({ batchNumber: batchId });
+
+                if (results && results.length > 0) {
+                    const data = results[0];
+
+                    // Header
+                    document.getElementById('res-product-name').innerText = data.product_name;
+                    document.getElementById('res-batch-id').innerText     = 'Batch ID: ' + data.batch_number;
+                    document.getElementById('res-harvest-date').innerText = new Date(data.created_at).toLocaleDateString('en-IN');
+                    document.getElementById('res-source-farm').innerText  = data.origin || 'N/A';
+                    document.getElementById('res-destination').innerText  = data.destination || 'In Progress';
+
+                    // Status chip
+                    const chip = document.getElementById('res-status-chip');
+                    chip.className = `chip status-${data.status}`;
+                    chip.innerText = `✅ ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}`;
+
+                    // Load events from Supabase
+                    let events = [];
+                    try {
+                        events = await core.getEvents(data.id);
+                    } catch (err) { console.error('Events error:', err); }
+
+                    document.getElementById('res-event-count').innerText = events.length;
+
+                    // Reset pipeline
+                    STAGE_ORDER.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) { el.classList.remove('active', 'completed'); }
+                    });
+                    CONN_ORDER.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.classList.remove('done');
+                    });
+
+                    updatePipeline(events, data.status);
+                    renderTimeline(events, data);
+
+                    resultEl.style.display = 'block';
+                    errorEl.style.display  = 'none';
+                    resultEl.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    resultEl.style.display = 'none';
+                    errorEl.style.display  = 'block';
+                }
+            } catch (err) {
+                console.error('Verification error:', err);
+                alert('An error occurred during verification. Check console for details.');
+            } finally {
+                btnText.innerText = 'Verify';
+            }
+        });
+    </script>
+</body>
+</html>

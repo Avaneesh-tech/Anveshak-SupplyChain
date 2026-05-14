@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="../../index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+            <div class="nav-links">
+                <span id="user-greeting" class="text-secondary">Welcome, Admin</span>
+                <button class="btn btn-ghost" onclick="core.logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="mb-2">
+                <h4 class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">System Admin</h4>
+                <ul style="list-style: none; margin-top: 1rem;">
+                    <li class="mb-1"><a href="#" class="nav-link active" onclick="showSection('overview')">Ecosystem Overview</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link" onclick="showSection('approvals')">Pending Approvals <span id="pending-badge" class="chip" style="display:none; padding: 0 0.4rem; font-size: 0.7rem;">0</span></a></li>
+                    <li class="mb-1"><a href="#" class="nav-link" onclick="showSection('users')">User Management</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link">Audit Logs</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="mb-2" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>Global Oversight</h1>
+                    <p class="text-secondary">Monitor the entire supply chain ecosystem and blockchain ledger.</p>
+                </div>
+                <div class="chip" style="padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.1); color: var(--info);">
+                    Network: Stable (99.9%)
+                </div>
+            </header>
+
+            <div id="overview-section">
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Total Users</span>
+                        <div class="stat-val" id="total-users">--</div>
+                        <small class="text-success">↑ 12 this week</small>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Verified Batches</span>
+                        <div class="stat-val" id="total-batches">--</div>
+                        <small class="text-success">↑ 85 this month</small>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Pending Approvals</span>
+                        <div class="stat-val" id="total-pending" style="color: var(--warning);">--</div>
+                        <small class="text-secondary">Action required</small>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Smart Contracts</span>
+                        <div class="stat-val">12 Active</div>
+                        <small class="text-info">2 pending audit</small>
+                    </div>
+                </div>
+
+                <div class="grid-2 mb-2">
+                    <div class="card">
+                        <h3 class="mb-1">Network Activity</h3>
+                        <div class="bar-chart mt-2">
+                            <div class="bar" style="height: 40%;" data-label="Mon"></div>
+                            <div class="bar" style="height: 65%;" data-label="Tue"></div>
+                            <div class="bar" style="height: 50%;" data-label="Wed"></div>
+                            <div class="bar" style="height: 85%;" data-label="Thu"></div>
+                            <div class="bar" style="height: 70%;" data-label="Fri"></div>
+                            <div class="bar" style="height: 90%;" data-label="Sat"></div>
+                            <div class="bar" style="height: 60%;" data-label="Sun"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="mb-1">Blockchain Node Status</h3>
+                        <ul style="list-style: none;" class="mt-1">
+                            <li class="mb-1 pb-1" style="border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                                <span><span class="status-dot status-active"></span>Node #001 (Mainnet)</span>
+                                <span class="text-muted">98ms</span>
+                            </li>
+                            <li class="mb-1 pb-1" style="border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                                <span><span class="status-dot status-active"></span>Node #002 (Primary)</span>
+                                <span class="text-muted">112ms</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="approvals-section" style="display:none;">
+                <div class="card mb-2">
+                    <h3 class="mb-1">Stakeholder Registration Approvals</h3>
+                    <div id="approvals-list">
+                        <p class="text-secondary">Loading pending registrations...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="users-section" style="display:none;">
+                <div class="card mb-2">
+                    <h3 class="mb-1">Ecosystem User Management</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 1rem 0.5rem;">User</th>
+                                <th style="padding: 1rem 0.5rem;">Role</th>
+                                <th style="padding: 1rem 0.5rem;">Status</th>
+                                <th style="padding: 1rem 0.5rem;">Last Activity</th>
+                                <th style="padding: 1rem 0.5rem;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Users loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3 class="mb-1">Recent Audit Logs</h3>
+                    <ul style="list-style: none;">
+                        <li class="mb-1 pb-1" style="border-bottom: 1px solid var(--border-color);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>System Upgrade</strong>
+                                <small class="text-muted">14:22</small>
+                            </div>
+                            <p class="text-secondary" style="font-size: 0.85rem; margin-top: 0.25rem;">Node #002 patched to v2.4.1</p>
+                        </li>
+                        <li class="mb-1 pb-1" style="border-bottom: 1px solid var(--border-color);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>Security Alert</strong>
+                                <small class="text-muted">11:05</small>
+                            </div>
+                            <p class="text-secondary" style="font-size: 0.85rem; margin-top: 0.25rem;">Multiple failed login attempts - IP: 192.168.1.45</p>
+                        </li>
+                        <li class="mb-1 pb-1" style="border-bottom: 1px solid var(--border-color);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>Batch Rejection</strong>
+                                <small class="text-muted">09:12</small>
+                            </div>
+                            <p class="text-secondary" style="font-size: 0.85rem; margin-top: 0.25rem;">Batch #B-882 rejected by Unit Alpha - Temp Violation</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="mb-1">Smart Contract Performance</h3>
+                    <div class="stat-card mb-1" style="background: var(--bg-tertiary);">
+                        <span class="stat-label">Avg. Execution Time</span>
+                        <div class="stat-val" style="font-size: 1.5rem;">1.2s</div>
+                    </div>
+                    <div class="stat-card" style="background: var(--bg-tertiary);">
+                        <span class="stat-label">Failed Tx (24h)</span>
+                        <div class="stat-val" style="font-size: 1.5rem; color: var(--danger);">0</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Supabase Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/supabase-config.js"></script>
+    <script src="../../assets/js/core.js"></script>
+    <script>
+        window.showSection = (sectionId) => {
+            document.querySelectorAll('main > div').forEach(div => div.style.display = 'none');
+            document.getElementById(`${sectionId}-section`).style.display = 'block';
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => link.classList.remove('active'));
+            event?.target?.classList?.add('active');
+        };
+
+        window.approveUser = async (userId) => {
+            if (!confirm('Approve this stakeholder?')) return;
+            try {
+                await core.approveUser(userId);
+                location.reload();
+            } catch (err) { alert(err.message); }
+        };
+
+        (async () => {
+            await core.checkAccess(['admin']);
+            if (!core.currentUser) return;
+            document.getElementById('user-greeting').innerText = `Welcome, ${core.currentUser.name}`;
+
+            // Load System Stats
+            try {
+                const stats = await core.getSystemStats();
+                document.getElementById('total-users').innerText = stats.userCount;
+                document.getElementById('total-batches').innerText = stats.batchCount;
+                document.getElementById('total-pending').innerText = stats.pendingCount;
+                if (stats.pendingCount > 0) {
+                    document.getElementById('pending-badge').style.display = 'inline-block';
+                    document.getElementById('pending-badge').innerText = stats.pendingCount;
+                }
+            } catch (err) { console.error(err); }
+
+            // Load Pending Approvals
+            try {
+                const pending = await core.getPendingRegistrations();
+                const container = document.getElementById('approvals-list');
+                if (pending.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No pending registrations.</p>';
+                } else {
+                    container.innerHTML = pending.map(user => `
+                        <div class="card glass mb-1" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${user.full_name}</strong> (${user.role})<br>
+                                <small class="text-muted">${user.username} | Joined ${new Date(user.created_at).toLocaleDateString()}</small>
+                            </div>
+                            <button class="btn btn-primary" onclick="approveUser('${user.id}')">Approve</button>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) { console.error(err); }
+
+            // Load Users
+            try {
+                const { data: users } = await window.supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+                const tableBody = document.getElementById('users-table-body');
+                if (tableBody && users) {
+                    tableBody.innerHTML = users.map(user => `
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 1rem 0.5rem;"><strong>${user.full_name}</strong><br><small class="text-muted">${user.username}</small></td>
+                            <td style="padding: 1rem 0.5rem;"><span class="chip" style="text-transform: capitalize;">${user.role}</span></td>
+                            <td style="padding: 1rem 0.5rem;"><span class="${user.is_approved ? 'text-success' : 'text-warning'}">● ${user.is_approved ? 'Active' : 'Pending'}</span></td>
+                            <td style="padding: 1rem 0.5rem;">${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td style="padding: 1rem 0.5rem;"><button class="btn btn-ghost" style="padding: 0.25rem 0.5rem;">Edit</button></td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) { console.error(err); }
+        })();
+    </script>
+</body>
+</html>

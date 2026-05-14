@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard | Anveshak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+    <nav class="site-navbar">
+        <div class="container nav-container">
+            <a href="../../index.html" class="brand">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </a>
+            <div class="nav-links">
+                <span id="user-greeting" class="text-secondary">Welcome, Buyer</span>
+                <button class="btn btn-ghost" onclick="core.logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="mb-2">
+                <h4 class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Consumer Portal</h4>
+                <ul style="list-style: none; margin-top: 1rem;">
+                    <li class="mb-1"><a href="#" class="nav-link active">My Orders</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link">Product Verification</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link">Supplier Validation</a></li>
+                    <li class="mb-1"><a href="#" class="nav-link">Feedback & Reviews</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="mb-2">
+                <h1>Buyer Portal</h1>
+                <p class="text-secondary">Track your purchases and verify product authenticity.</p>
+            </header>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Active Orders</span>
+                    <div class="stat-val">02</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Verified</span>
+                    <div class="stat-val">15</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Loyalty Points</span>
+                    <div class="stat-val">450</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-1">Recent Purchases</h3>
+                <div style="display: grid; gap: 1rem;">
+                    <div class="card glass" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem;">
+                        <div>
+                            <strong>Herbal Immune Booster (Pack of 3)</strong>
+                            <p class="text-muted" style="font-size: 0.8rem;">Batch #B-902 | Purchased: Oct 25</p>
+                        </div>
+                        <div class="text-center">
+                            <span class="chip" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">Authentic</span>
+                            <br>
+                            <a href="../../traceability.html" class="btn btn-ghost" style="padding: 0.25rem; font-size: 0.75rem;">Trace Journey</a>
+                        </div>
+                    </div>
+                    <div class="card glass" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem;">
+                        <div>
+                            <strong>Pure Ashwagandha Powder</strong>
+                            <p class="text-muted" style="font-size: 0.8rem;">Batch #B-880 | Purchased: Oct 10</p>
+                        </div>
+                        <div class="text-center">
+                            <span class="chip" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">Authentic</span>
+                            <br>
+                            <a href="../../traceability.html" class="btn btn-ghost" style="padding: 0.25rem; font-size: 0.75rem;">Trace Journey</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Supabase Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/supabase-config.js"></script>
+    <script src="../../assets/js/core.js"></script>
+    <script>
+        (async () => {
+            await core.checkAccess(['buyer']);
+            if (!core.currentUser) return;
+            document.getElementById('user-greeting').innerText = `Welcome, ${core.currentUser.name}`;
+
+            // Load Purchase History (Verified Batches)
+            try {
+                const batches = await core.getBatches({ status: 'delivered' });
+                const purchaseContainer = document.querySelector('.card:has(h3:contains("Recent Purchases")) div') || document.querySelector('.card > div');
+                if (purchaseContainer && batches.length > 0) {
+                    purchaseContainer.innerHTML = batches.map(batch => `
+                        <div class="card glass" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem;">
+                            <div>
+                                <strong>${batch.product_name}</strong>
+                                <p class="text-muted" style="font-size: 0.8rem;">Batch #${batch.batch_number} | Origin: ${batch.origin}</p>
+                            </div>
+                            <div class="text-center">
+                                <span class="chip" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">Authentic</span>
+                                <br>
+                                <a href="../../traceability.html?batch=${batch.batch_number}" class="btn btn-ghost" style="padding: 0.25rem; font-size: 0.75rem;">Trace Journey</a>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) { console.error(err); }
+        })();
+    </script>
+</body>
+</html>
