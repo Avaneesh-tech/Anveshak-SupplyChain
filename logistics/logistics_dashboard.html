@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics Dashboard | Anveshak</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='../index.html'">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>ANVESHAK</span>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="../index.html" class="nav-link">Traceability</a>
+                <a href="../index.html" class="nav-link">About Us</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-outline" onclick="window.location.href='../login_roles.html'">Login</button>
+                <button class="btn btn-primary" onclick="window.location.href='../roles.html'">New User</button>
+            </div>
+        </div>
+    </nav>
+    <main style="padding-top: 80px;">
+<section id="view-logistics-dashboard" class="view dashboard-view" style="display:flex">
+            <div class="dashboard-sidebar">
+                <div class="sidebar-header">Logistics Control</div>
+                <div class="sidebar-menu">
+                    <a href="#" class="active">Live Tracking</a>
+                    <a href="#">Shipments</a>
+                    <a href="#">Route Optimization</a>
+                </div>
+            </div>
+            <div class="dashboard-content">
+                <h2 class="dashboard-title">Fleet Overview</h2>
+                
+                <div class="logistics-grid">
+                    <div class="dash-card logistics-stat">
+                        <div class="icon-wrap">📦</div>
+                        <div>
+                            <div class="stat-num">24</div>
+                            <div class="stat-label">Packed Orders</div>
+                        </div>
+                    </div>
+                    <div class="dash-card logistics-stat">
+                        <div class="icon-wrap">🚛</div>
+                        <div>
+                            <div class="stat-num">12</div>
+                            <div class="stat-label">Dispatched</div>
+                        </div>
+                    </div>
+                    <div class="dash-card logistics-stat">
+                        <div class="icon-wrap">🛣️</div>
+                        <div>
+                            <div class="stat-num">8</div>
+                            <div class="stat-label">In Transit</div>
+                        </div>
+                    </div>
+                    <div class="dash-card logistics-stat">
+                        <div class="icon-wrap">📍</div>
+                        <div>
+                            <div class="stat-num">5</div>
+                            <div class="stat-label">Out for Delivery</div>
+                        </div>
+                    </div>
+                    <div class="dash-card logistics-stat">
+                        <div class="icon-wrap">✅</div>
+                        <div>
+                            <div class="stat-num">142</div>
+                            <div class="stat-label">Delivered</div>
+                        </div>
+                    </div>
+                    <div class="dash-card logistics-stat">
+                        <div class="icon-wrap">↩️</div>
+                        <div>
+                            <div class="stat-num">1</div>
+                            <div class="stat-label">Returned</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-card mt-6">
+                    <div class="flex-between">
+                        <h3>Active Deliveries (Blockchain Logged)</h3>
+                        <button class="btn btn-outline btn-sm">Scan QR</button>
+                    </div>
+                    <div class="list-item mt-4">
+                        <div class="flex-align">
+                            <div class="status-dot pulsing"></div>
+                            <div class="ml-3">
+                                <strong>Shipment #TRK-892</strong>
+                                <div class="text-sm text-muted">Destination: Mumbai, MH • ETA: 2 hrs</div>
+                            </div>
+                        </div>
+                        <span class="badge badge-warning">In Transit</span>
+                    </div>
+                    <div class="list-item">
+                        <div class="flex-align">
+                            <div class="status-dot green"></div>
+                            <div class="ml-3">
+                                <strong>Shipment #TRK-891</strong>
+                                <div class="text-sm text-muted">Blockchain Checkpoint: Warehouse B</div>
+                            </div>
+                        </div>
+                        <span class="badge badge-success">Delivered</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="../app.js"></script>
+</body>
+</html>
