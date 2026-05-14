@@ -22,20 +22,46 @@ class AnveshakCore {
 
     async updateUserFromSession(session) {
         if (session) {
-            const { data: profile } = await window.supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
+            try {
+                const { data: profile, error } = await window.supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
 
-            this.currentUser = {
-                id: session.user.id,
-                email: session.user.email,
-                role: profile?.role || 'buyer',
-                name: profile?.full_name || 'User',
-                isApproved: profile?.is_approved || false,
-                loginTime: session.user.last_sign_in_at
-            };
+                // If profile doesn't exist, create it
+                if (error && error.code === 'PGRST116') {
+                    console.warn('Profile not found, creating default profile');
+                    await window.supabaseClient.from('profiles').insert([{
+                        id: session.user.id,
+                        username: session.user.email.split('@')[0],
+                        full_name: session.user.user_metadata?.full_name || 'User',
+                        role: session.user.user_metadata?.role || 'buyer',
+                        is_approved: false
+                    }]);
+                } else if (error) {
+                    console.error('Profile fetch error:', error);
+                }
+
+                this.currentUser = {
+                    id: session.user.id,
+                    email: session.user.email,
+                    role: profile?.role || session.user.user_metadata?.role || 'buyer',
+                    name: profile?.full_name || session.user.user_metadata?.full_name || 'User',
+                    isApproved: profile?.is_approved || false,
+                    loginTime: session.user.last_sign_in_at
+                };
+            } catch (err) {
+                console.error('Session update error:', err);
+                this.currentUser = {
+                    id: session.user.id,
+                    email: session.user.email,
+                    role: session.user.user_metadata?.role || 'buyer',
+                    name: session.user.user_metadata?.full_name || 'User',
+                    isApproved: false,
+                    loginTime: session.user.last_sign_in_at
+                };
+            }
         } else {
             this.currentUser = null;
         }
@@ -84,6 +110,23 @@ class AnveshakCore {
             });
 
             if (error) throw error;
+
+            // Create profile record in profiles table
+            const { error: profileError } = await window.supabaseClient
+                .from('profiles')
+                .insert([{
+                    id: data.user.id,
+                    username: userData.username,
+                    full_name: userData.name,
+                    role: userData.role,
+                    is_approved: false
+                }]);
+
+            if (profileError) {
+                console.warn('Profile creation warning:', profileError.message);
+                // Don't throw - account was created successfully
+            }
+
             return { success: true };
         } catch (error) {
             console.error('Signup error:', error.message);
@@ -92,9 +135,14 @@ class AnveshakCore {
     }
 
     async logout() {
-        await window.supabaseClient.auth.signOut();
+        try {
+            await window.supabaseClient.auth.signOut();
+        } catch (err) {
+            console.log('Logout error (non-critical):', err.message);
+        }
         this.currentUser = null;
-        window.location.href = 'index.html';
+        // Redirect to home - use protocol + host to ensure absolute URL
+        window.location.href = window.location.origin + '/index.html';
     }
 
     async checkAccess(allowedRoles = []) {
@@ -103,16 +151,23 @@ class AnveshakCore {
         if (!session) {
             // Redirect if in dashboard
             if (window.location.pathname.includes('/dashboards/')) {
-                window.location.href = 'login.html';
+                window.location.href = '../../login.html';
             }
             return;
         }
 
-        this.updateUserFromSession(session);
+        await this.updateUserFromSession(session);
+
+        if (!this.currentUser) {
+            if (window.location.pathname.includes('/dashboards/')) {
+                window.location.href = '../../login.html';
+            }
+            return;
+        }
 
         if (allowedRoles.length > 0 && !allowedRoles.includes(this.currentUser.role)) {
             console.warn('Access Denied: User role', this.currentUser.role, 'not in allowed roles', allowedRoles);
-            window.location.href = 'index.html';
+            window.location.href = '../../index.html';
         }
     }
 
